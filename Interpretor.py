@@ -1,11 +1,13 @@
 import msdh
+import workspace
 from enum import Enum
 
 class ACTION(Enum):
     EXIT = -1
     SAVE = 0
-    PLOT = 1
-    DEFAULT = 2
+    LOAD = 1
+    PLOT = 2
+    DEFAULT = 3
 
 class MODE(Enum):
     NotInString = 0
@@ -66,10 +68,15 @@ def KeywordCheck(input : str) ->list:
             
     return tasks
 
+
+
 def TaskHandling(tasks : list) ->bool:
+    outcome = True
     for t in tasks:
         if(t.event == ACTION.SAVE):
-            msdh.time_evo_npz(t.args)
+            outcome = msdh.time_evo_npz(t.args)
+        if(t.event == ACTION.LOAD):
+            outcome = workspace.LoadWorkSpace(t.args) 
 
 def loop():
     input_str = ""

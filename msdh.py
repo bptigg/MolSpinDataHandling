@@ -2,7 +2,7 @@ import numpy as np
 import os
 import pandas as pd
 
-def ListCompatibleFiles():
+def ListFiles():
     files = os.listdir()
     compatible = []
     for f in files:
@@ -10,6 +10,29 @@ def ListCompatibleFiles():
         if ext == '.dat' or ext == '.DAT':
             compatible.append(f)
     return compatible
+
+def ListCompatibleFiles(filename : str, extension : str):
+    files = os.listdir()
+    root,ext = os.path.splitext(filename)
+    compatible = []
+    for f in files:
+        root,ext = os.path.splitext(f)
+        if(ext == extension):
+            compatible.append(root)
+    temp = []
+    for f in temp:
+        char = 0
+        notc = False
+        for c in root:
+            if c == f[char]:
+                char =+ 1
+                continue
+            notc = True
+        if(not notc):
+            temp.append(f)
+    compatible = temp
+    return compatible
+    
 
 def time_evo_npz(filename : str):
     root, ext = os.path.splitext(filename)
@@ -22,6 +45,8 @@ def time_evo_npz(filename : str):
     return False
 
 def LoadFile(filename : str, root : str, timevo = True):
+    if(os.path.isfile(filename) == False):
+        return False
     ds=pd.read_csv(filename, sep=r'[,|;\t" ]+(?=\S)', engine ='python')
     #if timeevo we split it into multiple files depending on the step
     data = [[]]
@@ -55,30 +80,13 @@ def LoadFile(filename : str, root : str, timevo = True):
             name = root + "-" + str(index)
             np.savez_compressed(name,dat=npz)
             index += 1
+    return True
 
 def LoadNPZ(filename : str):
-    files = os.listdir()
-    root,ext = os.path.splitext(filename)
-    compatible = []
-    for f in files:
-        root,ext = os.path.splitext(f)
-        if(ext == ".npz"):
-            compatible.append(root)
-    compatible2 = []
-    for f in compatible:
-        char = 0
-        notc = False
-        for c in root:
-            if c == f[char]:
-                char =+ 1
-                continue
-            notc = True
-        if(not notc):
-            compatible2.append(f)
-    if(len(compatible2) == 0):
-        time_evo_npz(filename)
+    return False
+    
         
             
 
 def LoadDirectory(filename : str):
-    return
+    return False

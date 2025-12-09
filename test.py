@@ -7,7 +7,7 @@ def PrintFiles(filelist : list):
         print(str(i) + ". " + f)
 
 def main():
-    files = msdh.ListCompatibleFiles()
+    files = msdh.ListFiles()
     PrintFiles(files)
     #file = int(input("Choose file (1-" + str(len(files)) + "): ")) - 1
     #msdh.time_evo_npz(files[file])
