@@ -16,16 +16,17 @@ def ListCompatibleFiles(filename : str, extension : str):
     root,ext = os.path.splitext(filename)
     compatible = []
     for f in files:
-        root,ext = os.path.splitext(f)
-        if(ext == extension):
-            compatible.append(root)
+        root2,ext2 = os.path.splitext(f)
+        if(ext2 == extension):
+            compatible.append(root2)
     temp = []
-    for f in temp:
+    for f in compatible:
         char = 0
         notc = False
         for c in root:
-            if c == f[char]:
-                char =+ 1
+            c2 = f[char]
+            if c == c2:
+                char += 1
                 continue
             notc = True
         if(not notc):
@@ -78,13 +79,15 @@ def LoadFile(filename : str, root : str, timevo = True):
             d.insert(0,columns)
             npz = np.array(d)
             name = root + "-" + str(index)
-            np.savez_compressed(name,dat=npz)
+            np.savez_compressed(name,dat=npz, allow_pickle=True)
             index += 1
     return True
 
-def LoadNPZ(filename : str):
-    return False
-    
+def LoadNPZ(filename : str, key : str):
+    file = filename + ".npz"
+    f = np.load(file, allow_pickle=True)
+    print(f[key])
+    return f[key]
         
             
 

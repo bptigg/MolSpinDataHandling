@@ -6,8 +6,9 @@ class ACTION(Enum):
     EXIT = -1
     SAVE = 0
     LOAD = 1
-    PLOT = 2
-    DEFAULT = 3
+    CREATE = 2
+    PLOT = 3
+    DEFAULT = 4
 
 class MODE(Enum):
     NotInString = 0
@@ -23,7 +24,7 @@ def KeywordCheck(input : str) ->list:
     char = []
     for c in input:
         char.append(c)
-    print(char)
+    #print(char)
     keywords = []
     args = []
     currentkeyword = ""
@@ -62,8 +63,8 @@ def KeywordCheck(input : str) ->list:
         if k == 'save':
             tasks.append(Task(ACTION.SAVE, args[index]))
             continue
-        if k == 'load':
-            tasks.append(Task(ACTION.LOAD, args[index]))
+        if k == 'create':
+            tasks.append(Task(ACTION.CREATE, args[index]))
             continue
         if k == 'plot':
             tasks.append(Task(ACTION.PLOT, args[index]))
@@ -78,8 +79,8 @@ def TaskHandling(tasks : list) ->bool:
     for t in tasks:
         if(t.event == ACTION.SAVE):
             outcome = msdh.time_evo_npz(t.args)
-        if(t.event == ACTION.LOAD):
-            outcome = workspace.LoadWorkSpace(t.args) 
+        if(t.event == ACTION.CREATE):
+            outcome = workspace.CreateWorkSpace(t.args) 
 
 def loop():
     input_str = ""
