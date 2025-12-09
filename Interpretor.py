@@ -62,6 +62,9 @@ def KeywordCheck(input : str) ->list:
         if k == 'save':
             tasks.append(Task(ACTION.SAVE, args[index]))
             continue
+        if k == 'load':
+            tasks.append(Task(ACTION.LOAD, args[index]))
+            continue
         if k == 'plot':
             tasks.append(Task(ACTION.PLOT, args[index]))
             continue
