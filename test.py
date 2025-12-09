@@ -1,4 +1,5 @@
 import msdh
+import Interpretor
 
 def PrintFiles(filelist : list):
     i = 1
@@ -8,7 +9,9 @@ def PrintFiles(filelist : list):
 def main():
     files = msdh.ListCompatibleFiles()
     PrintFiles(files)
-    file = int(input("Choose file (1-" + str(len(files)) + "): ")) - 1
-    msdh.time_evo_npz(files[file])
+    #file = int(input("Choose file (1-" + str(len(files)) + "): ")) - 1
+    #msdh.time_evo_npz(files[file])
+    #msdh.time_evo_npz(files[0])
+    Interpretor.loop()
 
 main()
