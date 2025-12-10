@@ -79,6 +79,7 @@ def LoadFile(filename : str, root : str, timevo = True):
             d.insert(0,columns)
             npz = np.array(d)
             name = root + "-" + str(index)
+            print("Saving NPZ file: " + name)
             np.savez_compressed(name,dat=npz, allow_pickle=True)
             index += 1
     return True

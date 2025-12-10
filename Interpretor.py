@@ -3,12 +3,15 @@ import workspace
 from enum import Enum
 
 class ACTION(Enum):
+    HELP = -2
     EXIT = -1
     SAVE = 0
     LOAD = 1
     CREATE = 2
-    PLOT = 3
-    DEFAULT = 4
+    PRINT = 3
+    WORKSPACE = 4
+    PLOT = 5
+    DEFAULT = 6
 
 class MODE(Enum):
     NotInString = 0
@@ -58,6 +61,8 @@ def KeywordCheck(input : str) ->list:
     index = -1
     for k in keywords:
         index += 1
+        if k == 'help':
+            return [ACTION.HELP]
         if k == 'exit':
             return [ACTION.EXIT]
         if k == 'save':
@@ -66,6 +71,10 @@ def KeywordCheck(input : str) ->list:
         if k == 'create':
             tasks.append(Task(ACTION.CREATE, args[index]))
             continue
+        if k =='workspace':
+            tasks.append(Task(ACTION.WORKSPACE, args[index]))
+        if k == 'print':
+            tasks.append(Task(ACTION.PRINT, args[index]))
         if k == 'plot':
             tasks.append(Task(ACTION.PLOT, args[index]))
             continue
@@ -79,8 +88,20 @@ def TaskHandling(tasks : list) ->bool:
     for t in tasks:
         if(t.event == ACTION.SAVE):
             outcome = msdh.time_evo_npz(t.args)
-        if(t.event == ACTION.CREATE):
-            outcome = workspace.CreateWorkSpace(t.args) 
+        elif(t.event == ACTION.CREATE):
+            outcome = workspace.CreateWorkSpace(t.args)
+        elif(t.event == ACTION.PRINT):
+            outcome == workspace.print_workspace(t.args)
+        elif(t.event == ACTION.WORKSPACE):
+            outcome = workspace.modify_workspace(t.args)
+
+def help():
+    help_str = """
+    Info \n
+    ----------------------
+    SAVE - creates a NPZ file from the specified '.DAT' file\n
+    LOAD
+    """
 
 def loop():
     input_str = ""
@@ -88,8 +109,13 @@ def loop():
     while(event != ACTION.EXIT):
         input_str = input(">>> ")
         events = KeywordCheck(input_str)
+        if(len(events) == 0):
+            continue
         if(events[0] == ACTION.EXIT):
             event = events[0]
+            continue
+        elif(events[0] == ACTION.HELP):
+            help()
         else:
             TaskHandling(events)
 
