@@ -1,5 +1,6 @@
 import msdh
 import workspace
+import datafitting
 from enum import Enum
 
 class ACTION(Enum):
@@ -10,8 +11,9 @@ class ACTION(Enum):
     CREATE = 2
     PRINT = 3
     WORKSPACE = 4
-    PLOT = 5
-    DEFAULT = 6
+    CURVEFIT = 5
+    PLOT = 6
+    DEFAULT = 7
 
 class MODE(Enum):
     NotInString = 0
@@ -73,9 +75,14 @@ def KeywordCheck(input : str) ->list:
             continue
         if k =='workspace':
             tasks.append(Task(ACTION.WORKSPACE, args[index]))
+            continue
         if k == 'print':
             tasks.append(Task(ACTION.PRINT, args[index]))
+            continue
         if k == 'plot':
+            tasks.append(Task(ACTION.PLOT, args[index]))
+            continue
+        if k == 'curvefit':
             tasks.append(Task(ACTION.PLOT, args[index]))
             continue
             
@@ -94,6 +101,8 @@ def TaskHandling(tasks : list) ->bool:
             outcome == workspace.print_workspace(t.args)
         elif(t.event == ACTION.WORKSPACE):
             outcome = workspace.modify_workspace(t.args)
+        elif(t.event == ACTION.CURVEFIT):
+            outcome = datafitting.curvefit(t.args)
 
 def help():
     help_str = """

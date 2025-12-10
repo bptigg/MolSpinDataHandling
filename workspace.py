@@ -1,5 +1,6 @@
 import msdh
 import os
+
 class workspace:
     def __init__(self, name, data, npzfile, key):
         self.name = name
@@ -15,6 +16,13 @@ class ActiveWorkspace:
 
     def AddWorkSpace(self, workspace : workspace):
         self.workspaces[workspace.name] = workspace
+    def GetKey(self, index):
+        i = 0
+        for k in self.workspaces:
+            if i == index:
+                return k
+            index += 1
+
     def RemoveWorkSpace(self, name):
         del self.workspaces[name]
 
@@ -102,7 +110,23 @@ def AddWorkspace():
 
 
 def RemoveWorkspace():
-    return True
+    avail = []
+    index = 0
+    for w in ACTIVE.workspaces:
+        avail.append(w)
+    if(len(avail) == 0):
+        print("No available workspaces to remove")
+        return True
+    for w in avail:
+        index += 1
+        print("{}. {}".format(index, w))
+    print("Select workspaces (e.g. '[1:1],[3:5]' means add workspace 1 and add workspaces 3,4,5)")
+    inputstr = input(">>> ")
+    ws = workspace_index(inputstr)
+    for w in ws:
+        if(w < len(ACTIVE.workspaces)):
+            ACTIVE.RemoveWorkSpace(ACTIVE.GetKey(w))
+
 
 def modify_workspace(args):
     funcs = [AddWorkspace, RemoveWorkspace]
