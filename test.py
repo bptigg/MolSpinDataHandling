@@ -5,6 +5,7 @@ def PrintFiles(filelist : list):
     i = 1
     for f in filelist:
         print(str(i) + ". " + f)
+        i += 1
 
 def main():
     files = msdh.ListFiles()

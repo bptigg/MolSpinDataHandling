@@ -1,5 +1,6 @@
 import msdh
 import os
+from datafit import DataFit
 
 class workspace:
     def __init__(self, name, data, npzfile, key):
@@ -7,7 +8,19 @@ class workspace:
         self.data = data
         self.datnpzfile = npzfile
         self.datakey = key
+        self.fit = []
+        cols = len(self.data[0])
+        for i in range(cols):
+            self.fit.append([])
+            for k in range(cols):
+                self.fit[i].append([])
         pass
+
+    def AddDatafit(self, fit : DataFit, row : int, col : int):
+        self.fit[row][col].append(fit)
+
+    def GetDataFit(self,row,col):
+        return self.fit[row][col]
 
 class ActiveWorkspace:
     def __init__(self):
@@ -21,10 +34,42 @@ class ActiveWorkspace:
         for k in self.workspaces:
             if i == index:
                 return k
-            index += 1
+            i += 1
 
     def RemoveWorkSpace(self, name):
         del self.workspaces[name]
+
+    def AccessWorkspace(self):
+        return self.workspaces
+    
+    def GetModeColNum(self):
+        keys = []
+        for k in self.workspaces:
+            keys.append(k)
+        cols = [len(self.workspaces[keys[0]].data[0])]
+        for i in range(0,len(self.workspaces)):
+            cols.append(len(self.workspaces[keys[i]].data[0]))
+        freq = []
+        uniquecols = []
+        for i in cols:
+            if not i in uniquecols:
+                uniquecols.append(i)
+                freq.append(1)
+            else:
+                index = uniquecols.index(i)
+                freq[index] += 1
+        max = 0
+        maxindex = 0
+        index
+        for i in freq:
+            if i > max:
+                max = freq
+                maxindex = index
+            index += 1
+        
+        mode = uniquecols[maxindex]
+        return mode, cols
+
 
 
 LOADED_WORKSPACES = []
