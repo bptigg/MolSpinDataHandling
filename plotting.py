@@ -1,7 +1,11 @@
 import workspace
+import action
+from action import Node
 from datafit import DataFit
 import matplotlib.pyplot as plt
 
+PlottingInterprator = None 
+nodes = {}
 class Data:
     def __init__(self):
         self.raw = []
@@ -47,7 +51,14 @@ class Plot:
         self.Data.pop(index)
         return
     
+
+    
 CurrentPlot = Plot()
+
+top = ['create' , 'add', 'remove']
+secondry = ['figure', 'axis', 'data', 'xtitle', 'ytitle', 'title']
+tertiary = ['using', 'with', 'in']
+types = ['lines', 'scatter', 'contour']
 
 #def InitializeFigure():
 #    fig = plt.figure(figsize=(12,9), dpi = 100)
@@ -71,20 +82,130 @@ CurrentPlot = Plot()
 #        y.append(data[i][ycol])
 #    return x,y
 
-def PassArgument():
-    keywords = ['figure', 'create', 'axis', 'in', 'using', 'add', 'remove', 'data', 'with'] #need to have a proper think about this (maybe too many words)
-    plottypes = ['lines', 'scatter', 'contour']
-    #example string "create figure using dataset1[1:2] with lines ; "in figure 1 add axis" ; "create figure 1 in axis 2 using dataset1[1:3] with lines"
-    #
+def PlotNetwork():
+    global nodes
+    for t in top:
+        nodes[t] = Node(t)
+    for s in secondry:
+        nodes[s] = Node(s)
+    for tr in tertiary:
+        nodes[tr] = Node(tr)
+    for ty in types:
+        nodes[ty] = Node(ty)
+
+    nodes['index'] = Node('index')
+    nodes['str'] = Node('str')
+
+    nodes['create'].AddChildren([nodes['figure']])
+    temp = []
+    for i in secondry[1:len(secondry)]:
+        temp.append(nodes[i])
+    nodes['add'].AddChildren(temp)
+    temp = []
+    for i in secondry:
+        temp.append(nodes[i])
+    for i in types:
+        nodes[i].AddParents([nodes['with']])
+    nodes['remove'].AddChildren(temp)
+    temp = []
+
+    nodes['figure'].AddParents([nodes['create'], nodes['remove'], nodes['in']])
+    nodes['figure'].AddChildren([nodes['using'], nodes['index']])
+
+    nodes['axis'].AddParents([nodes['add'], nodes['remove'], nodes['in']])
+    nodes['axis'].AddChildren([nodes['using'], nodes['index']])
+
+    nodes['using'].AddParents([nodes['figure'], nodes['index']])
+    nodes['using'].AddChildren([nodes['index']])
+    nodes['with'].AddParents([nodes['index']])
+    nodes['with'].AddChildren(nodes[x] for x in types)
+    nodes['in'].AddParents([nodes['index'], nodes['str']])
+    nodes['in'].AddChildren([nodes['axis'], nodes['figure']])
+
+    nodes['index'].AddParents([nodes['using'], nodes['figure'], nodes['axis'], nodes['data']])
+    nodes['index'].AddChildren([nodes['with'], nodes['in']])
+    nodes['str'].AddParents([nodes['xtitle'], nodes['ytitle'], nodes['title']])
+    nodes['str'].AddChildren([nodes['in']])
+
+    nodes['xtitle'].AddParents([nodes['add'], nodes['remove']])
+    nodes['xtitle'].AddChildren([nodes['str']])
+    nodes['ytitle'].AddParents([nodes['add'], nodes['remove']])
+    nodes['ytitle'].AddChildren([nodes['str']])
+    nodes['title'].AddParents([nodes['add'], nodes['remove']])
+    nodes['title'].AddChildren([nodes['str']])
+
+    global PlottingInterprator
+    PlottingInterprator = action.Network(nodes)
+    return
+
+def ExceptionFunc(char : list):
+    if char[0] == "[":
+        return nodes['index']
+    if char[0] == "'":
+        return nodes['str']
+    return None
+
+def ValidateInput(words):
+    if PlottingInterprator == None:
+        PlotNetwork()
+
+    PlottingInterprator.traverse(words, ExceptionFunc)
+
+    if(not words[0] in top):
+        return False
+    if(not words[1] in secondry):
+        return False
+    
+
+def PassArgument(arg):    
+    words = []
+    chars = [[]]
+    tempchars = []
+    index = 0
+    for c in arg:
+        if c == ' ':
+            chars[index].append(tempchars)
+            tempchars = []
+        elif c == ';':
+            chars[index].append(tempchars)
+            chars.append([])
+            tempchars = []
+            index = index + 1
+        else:
+            tempchars.append(c)
+    chars[index].append(tempchars)
+    print(chars)
+    words = []
+    index = 0
+    for c in chars:
+        words.append([])
+        for c2 in c:
+            if c2[0] == '[':
+                words[index].append(c2)
+            elif c2[0] == "'":
+                words[index].append(c2)
+            else:
+                words[index].append(''.join(c2))
+        index += 1
+    print(words)
+    valid = []
+    for w in words:
+        ValidateInput(w)
+
+
+
 
 
 def plot(args):
     active = workspace.ACTIVE.AccessWorkspace()
+    if len(active) == 0:
+        return
     current = []
     for k in active:
         current.append(active[k])
     index = 0
     mode, cols = workspace.ACTIVE.GetModeColNum()
+    PassArgument(args)
     #for i in cols:
     #    if i != mode:
     #        print("Workspace {} has a different number of cols than the avg, unexpected plotting may occur".format(current[index].name))
