@@ -51,7 +51,9 @@ class Plot:
         self.Data.pop(index)
         return
     
-
+class PlotTask():
+    def __init__(self):
+        pass
     
 CurrentPlot = Plot()
 
@@ -149,13 +151,16 @@ def ValidateInput(words):
     if PlottingInterprator == None:
         PlotNetwork()
 
-    PlottingInterprator.traverse(words, ExceptionFunc)
+    nodes = PlottingInterprator.traverse(words, ExceptionFunc)
 
     if(not words[0] in top):
         return False
     if(not words[1] in secondry):
         return False
-    
+    EvaluateInput(nodes)
+
+def EvaluateInput(validated):
+    return True
 
 def PassArgument(arg):    
     words = []

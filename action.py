@@ -19,11 +19,12 @@ class Network:
     def __init__ (self, nodes : dict):
         self.nodes = nodes
     def traverse(self, path, exception):
+        nodes = []
         if (not path[0] in self.nodes):
             return False
         prevnode = self.nodes[path[0]]
+        nextnode = None
         for i in range(1,len(path)):
-            nextnode = None
             print(self.nodes.keys())
             if not path[i] in self.nodes.keys(): #need to fix
                 nextnode = exception(path[i])
@@ -33,8 +34,10 @@ class Network:
                 nextnode = self.nodes[path[i]]
             if(prevnode in nextnode.GetParents() and nextnode in prevnode.GetChildren()):
                 prevnode = nextnode
+                nodes.append(prevnode)
                 continue
             else:
                 return False
-        return True
+        nodes.append(next)
+        return nodes
     
